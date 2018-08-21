@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="author" content="Hizex">
+    
+    
+    
+    
+    
+    
+    <title>C：基于WinPcap的网络抓包 | zero</title>
+    <!-- inject:style -->
+    <link href="/css/style.css" rel="stylesheet" type="text/css">
+    <!-- endinject -->
+    <style>
+        .cube-loading {
+            top: 0;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: url('/images/lg/loading.gif') no-repeat center center;
+            background-color: rgba(0,0,0,.7);
+        }
+
+        .cube-loading.out {
+            display: none;
+        }
+
+        .cube-loading:before {
+            display: block;
+            content: 'Loading';
+            position: relative;
+            width: 100%;
+            top: 50%;
+            right: -50%;
+            color: #fff;
+        }
+
+        @media(max-width: 768px) {
+            .cube-loading:before {
+                font-size: 1.2em;
+                transform: translate(-24px,20px);
+                -webkit-transform: translate(-24px,20px);
+                -o-transform: translate(-24px,20px);
+                -ms-transform: translate(-24px,20px);
+            }
+        }
+
+        @media(min-width: 768px) {
+            .cube-loading:before {
+
+            }
+        }
+    </style>
+    
+</head>
+<body>
+<div class="cube-body">
+    <nav id="cube-top-memu" class="cube-menu">
+    <ul class="cube-menu-collapse">
+        
+        <li>
+            <i class="cube-icon cube-icon-home" aria-hidden="true"></i>
+            <a href="/">首页</a>
+        </li>
+        
+        <li>
+            <i class="cube-icon cube-icon-archive" aria-hidden="true"></i>
+            <a href="/archives">归档</a>
+        </li>
+        
+        <li>
+            <i class="cube-icon cube-icon-categories" aria-hidden="true"></i>
+            <a href="/categories">分类</a>
+        </li>
+        
+        <li>
+            <i class="cube-icon cube-icon-tags" aria-hidden="true"></i>
+            <a href="/tags">标签</a>
+        </li>
+        
+        <li>
+            <i class="cube-icon cube-icon-about" aria-hidden="true"></i>
+            <a href="/about-me">关于我</a>
+        </li>
+        
+    </ul>
+</nav>
+<nav class="cube-side-menu" id="cube-side-menu">
+    <ul class="cube-menu-list">
+        
+        <li>
+            <a class="lrc-control">Open Lyrics</a>
+        </li>
+        
+        <li>
+            <a class="scroll-to-top">Top</a>
+        </li>
+    </ul>
+</nav>
+    <header class="cube-header" id="cube-header">
+    <img src=" background.png " alt="头部背景图片">
+    
+    <div class="cube-type">
+        <span class="cube-typed-title">Walking steadily</span>
+        <span class="cube-typed-cursor">|</span>
+    </div>
+    
+</header>
+
+    <style>
+        nav.cube-menu:before {
+            content: '';
+            visibility: hidden;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 44px;
+        
+            filter: blur(5px);
+            -webkit-filter: blur(5px);
+        
+            z-index: -1;
+            background-image: url('/images/background.png');
+            background-repeat: no-repeat;
+            background-position: center -206px;
+            background-size: cover;
+            background-color: transparent;
+        }
+
+        header.cube-background.cube-header-background {
+            visibility: hidden;
+            background-image: url('/images/background.png');
+            background-position: center -250px;
+        }
+    </style>
+    <header class="cube-background cube-header-background">
+        
+        <div class="cube-type">
+            <span class="cube-typed-title">Walking steadily</span>
+            <span class="cube-typed-cursor">|</span>
+        </div>
+        
+    </header>
+    <div class="load-header-background"></div>
+    <script>
+        (function (window) {
+
+            window.headerModule = {}
+            window.headerModule.image = {
+                width: '2000',
+                height: '1414'
+            }
+
+        })(window)
+    </script>
+    
+    <div class="cube-content">
+        <div class="cube-left">
+            <div class="cube-article">
+    <h1 class="title">C：基于WinPcap的网络抓包</h1>
+    
+    <div class="cube-article-header">
+        <div class="cube-article-date">
+            <i class="cube-icon cube-icon-date" aria-hidden="true"></i>
+            <!-- moment.js对象 -->
+            2018-08-20
+        </div>
+        <div class="cube-article-tags">
+    <i class="cube-icon cube-icon-tag" aria-hidden="true"></i>
+    
+    <a href="/tags/C/">#C</a>
+    
+</div>
+    </div>
+    
+    <div class="cube-article-content cube-markdown">
+        
+        <h1 id="WinPcap"><a href="#WinPcap" class="headerlink" title="WinPcap"></a>WinPcap</h1><p>WinPcap是Windows平台下访问网络数据链路层的开源库。WinPcap允许应用程序绕开网络协议栈来捕获与传递网络数据包，并具有额外的有用特性，包括内核层的数据包过滤、一个 网络统计引擎与支持远程数据包捕获。Winpcap提供了一个强大的编程接口，为win32应用程序提供访问网络底层的能力。<br><img src="/images/WinPcap.jpg" title="[WinPcap的各个组成部分]"></p>
+<a id="more"></a>
+<h1 id="Wpcap-dll库"><a href="#Wpcap-dll库" class="headerlink" title="Wpcap.dll库"></a>Wpcap.dll库</h1><h2 id="主要结构体"><a href="#主要结构体" class="headerlink" title="主要结构体"></a>主要结构体</h2><h3 id="struct-pcap-if-t"><a href="#struct-pcap-if-t" class="headerlink" title="struct_pcap_if_t"></a>struct_pcap_if_t</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Struct pcap_if&#123; </span><br><span class="line">					pcap_if *  next;        </span><br><span class="line">					char *  name;        </span><br><span class="line">					char *description;      </span><br><span class="line">					pcap_addr * addresses;  </span><br><span class="line">					u_int flags;            </span><br><span class="line">					&#125;</span><br></pre></td></tr></table></figure>
+<p>网络设备结构，表示一个网络接口设备.<br>参数：<br>    next:指向下一个元素的指针, 如果是NULL，表示链表结束。<br>    name:winpacap为网络接口卡分配的名字，作为一个参数传递给pcap_open_live()，用户打开网卡。<br>    description:适配器的描述addresses:指向接口的地址列表的第一个元素。<br>    flags:标志是是否回送网卡</p>
+<h3 id="struct-pcap-addr"><a href="#struct-pcap-addr" class="headerlink" title="struct_pcap_addr"></a>struct_pcap_addr</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct pcap_addr &#123;</span><br><span class="line">    				struct pcap_addr *next;     </span><br><span class="line">    				struct sockaddr *addr;     </span><br><span class="line">    				struct sockaddr *netmask;  </span><br><span class="line">    				struct sockaddr *broadaddr;  </span><br><span class="line">    				struct sockaddr *dstaddr;  </span><br><span class="line">					&#125;	</span><br></pre></td></tr></table></figure>
+<p>表示接口地址。<br>参数：<br>    next：指向下一个元素的指针；<br>    addr：IP地址；<br>    netmask：网络掩码；<br>    broadaddr：广播地址；<br>    dstaddr：P2P目的地址。</p>
+<h3 id="struct-pcap-pkthdr"><a href="#struct-pcap-pkthdr" class="headerlink" title="struct pcap_pkthdr"></a>struct pcap_pkthdr</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct pcap_pkthdr&#123;</span><br><span class="line">					struct timeval ts; </span><br><span class="line">					bpf_u_int32 caplen; </span><br><span class="line">					bpf_u_int32 len;</span><br><span class="line">					&#125;;</span><br></pre></td></tr></table></figure>
+<p>这个结构体是由pcap_loop自己填充的，用来取得一些关于数据包的信息所以，在callback函数当中只有第一个user指针是可以留给用户使用的，如果你想给callback传递自己参数，那就只能通过pcap_loop的最后一个参数user来实现。<br>参数：<br>    ts：时间戳；<br>    caplen：已捕获部分的长度；<br>    len：该包的脱机长度。</p>
+<h3 id="struct-sockaddr-in"><a href="#struct-sockaddr-in" class="headerlink" title="struct sockaddr_in"></a>struct sockaddr_in</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct sockaddr_in &#123;</span><br><span class="line">   					short    sin_family; </span><br><span class="line">					u_short    sin_port; </span><br><span class="line">    				struct    in_addr sin_addr;</span><br><span class="line">    				char    sin_zero[8];</span><br><span class="line">					&#125;;</span><br></pre></td></tr></table></figure>
+<p>接口地址的表示形式</p>
+<h3 id="struct-in-addr"><a href="#struct-in-addr" class="headerlink" title="struct in_addr"></a>struct in_addr</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">struct in_addr &#123;</span><br><span class="line">    				in_addr_t s_addr;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>表示一个32位的IPv4地址。in_addr_t一般为32位的unsigned int，其字节顺序为网络字节序，即该无符号数采用大端字节序。其中每8位表示一个IP地址中的一个数值。</p>
+<h2 id="主要函数"><a href="#主要函数" class="headerlink" title="主要函数"></a>主要函数</h2><h3 id="int-pcap-findalldevs-ex"><a href="#int-pcap-findalldevs-ex" class="headerlink" title="int pcap_findalldevs_ex"></a>int pcap_findalldevs_ex</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int pcap_findalldevs_ex(</span><br><span class="line">					char * source,</span><br><span class="line">					struct pcap_rmtauth * auth,	</span><br><span class="line">					pcap_if_t ** alldevs,</span><br><span class="line">					char * errbuff	</span><br><span class="line">					)</span><br></pre></td></tr></table></figure>
+<p>功能：获得当前所有可用的网络设备（网卡）的列表，并且这个列表可以被pcap_open（）打开。<br>返回值：成功返回0，alldevs返回设备列表，alldevs不会为NULL。否则返回－1，那就是说系统没有任何接口可以列举的。出错的消息在errbuf里面返回。<br>参数：<br>    source: 指定从哪获取网络接口设备列表,例如”rpcap://”，表示本地适配器；<br>    auth：保存连接到远程主机上授权信息,查询本机时为NULL；<br>    alldevs：指向pcap_if_t结构的指针；<br>    errbuff：存放错误信息。</p>
+<h3 id="pcap-t-pcap-open"><a href="#pcap-t-pcap-open" class="headerlink" title="pcap_t *pcap_open"></a>pcap_t *pcap_open</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">pcap_t *pcap_open(</span><br><span class="line">					const char *	source, </span><br><span class="line">					int	snaplen, </span><br><span class="line">					int	flags,	</span><br><span class="line">					int	read_timeout,	</span><br><span class="line">					struct pcap_rmtauth *	auth, </span><br><span class="line">					char *	errbuf	</span><br><span class="line">					)</span><br></pre></td></tr></table></figure>
+<p>功能：打开一个通用的源。<br>返回值：指向’pcap_t’的指针，可以用作以下调用（pcap_compile（）等）的参数，并指定打开的WinPcap会话。如果出现问题，它返回NULL，’errbuf’变量保留错误消息。<br>参数：<br>    source：包含要打开的源名称；<br>    snplen：保留的包的长度；<br>    flags：保留捕获数据包可能需要的几个标志；<br>    read_timeout：以毫秒为单位读取超市；<br>    auth：保存连接到远程主机上授权信息,查询本机时为NULL；<br>    errbuf：指向用户分配的缓冲区的指针，该缓冲区将在该函数失败的情况下包含错误。</p>
+<h3 id="Pcap-sendpacket"><a href="#Pcap-sendpacket" class="headerlink" title="Pcap_sendpacket"></a>Pcap_sendpacket</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Pcap_sendpacket(</span><br><span class="line">					pcap_t *p,	 </span><br><span class="line">					u_char * buf, </span><br><span class="line">					int size</span><br><span class="line">					)</span><br></pre></td></tr></table></figure>
+<p>功能：发送一个数据包。<br>返回值：返回值为0说明数据包已经成功的发送了，否则返回-1。<br>参数：<br>    p：将要在它上面发送数据的适配器；<br>    buf：一个包含将要发送的数据缓冲区；<br>    size：缓冲区的长度。</p>
+<h3 id="void-pcap-freealldevs"><a href="#void-pcap-freealldevs" class="headerlink" title="void pcap_freealldevs"></a>void pcap_freealldevs</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">void pcap_freealldevs(</span><br><span class="line">					pcap_if_t *alldevsp</span><br><span class="line">					)</span><br></pre></td></tr></table></figure>
+<p>功能：由函数pcap_findalldevs_ex或pcap_findalldevs函数返回的网络适配器设备链表，必须调用pcap_freealldevs函数释放。</p>
+<h3 id="int-pcap-loop"><a href="#int-pcap-loop" class="headerlink" title="int pcap_loop"></a>int pcap_loop</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int pcap_loop(</span><br><span class="line">					pcap_t * p,</span><br><span class="line">					int cnt, </span><br><span class="line">					pcap_handler callback, </span><br><span class="line">					uchar * user</span><br><span class="line">					);</span><br></pre></td></tr></table></figure>
+<p>功能：捕获数据包,不会响应pcap_open_live()函数设置的超时时间<br>返回值：成功返回0，失败返回1；<br>参数:<br>        p：是由pcap_open_live()返回的所打的网卡的指针;<br>        cnt：用于设置所捕获数据包的个数;<br>        pcap_handler：是与void packet_handler()使用的一个参数,即回调函数（回调函数就是一个通过函数指针调用的函数。）的名称; 回调函数原型为pcap_callback；<br>        user：值一般为NULL。    </p>
+<h3 id="pcap-callback"><a href="#pcap-callback" class="headerlink" title="pcap_callback"></a>pcap_callback</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pcap_callback(</span><br><span class="line">					u_char* argument,</span><br><span class="line">					const struct pcap_pkthdr* packet_header,</span><br><span class="line">					const u_char* packet_content</span><br><span class="line">					)	</span><br></pre></td></tr></table></figure>
+<p>功能：解析数据包<br>参数：<br>    pcap_content：表示的捕获到的数据包的内容；<br>    argument：是从函数pcap_loop()传递过来的。注意：这里的参数就是指 pcap_loop中的 *user 参数；<br>    pcap_pkthdr：表示捕获到的数据包基本信息,包括时间,长度等信息。</p>
+<h1 id="计算机网络中的数据传递过程分析"><a href="#计算机网络中的数据传递过程分析" class="headerlink" title="计算机网络中的数据传递过程分析"></a>计算机网络中的数据传递过程分析</h1><p>了解计算机网络协议是本课题研究的基础，要实现发包、抓包的功能，必须先梳理清楚数据在网络中的传递。数据发送过程阐述如下：<br>在发送主机端，一个应用层报文被传送给传输层。传输层收到报文之后，在报文上附上附加信息，即所谓的传输层首部信息，该首部信息将被接收端的传输层使用。应用层报文和传输层首部信息一起构成了传输层报文段，传输层报文段因此封装了应用层报文。<br>传输层则向网络层传递该报文段，网络层增加了网络层首部信息，比如源和目的端系统的地址等，由此产生了网络层数据报。<br>该数据报接下来被传递给链路层，链路层增加它自己的链路层首部信息，创建了链路层帧。<br>所以，我们看到在每一层，一个分组都具有两种类型的字段：首部字段和有效载荷字段。而有效载荷即来自于上一层的分组。<br>简言之，发送端就是对应用层数据一层一层加头的过程，到接收端后，接收端再一层一层去掉头部信息，然后交给对应的应用程序。<br><img src="/images/WinPcap-2.jpg" title="[数据在互联网中的传送]"></p>
+<h1 id="程序设计"><a href="#程序设计" class="headerlink" title="程序设计"></a>程序设计</h1><h2 id="数据包结构体设计"><a href="#数据包结构体设计" class="headerlink" title="数据包结构体设计"></a>数据包结构体设计</h2><h3 id="ARP报文（网络层）"><a href="#ARP报文（网络层）" class="headerlink" title="ARP报文（网络层）"></a>ARP报文（网络层）</h3><p>ARP（地址解析协议），是根据IP地址获取物理地址的一个TCP/IP协议，主要作用是通过IP地址来获取MAC地址。<br>本机向局域网内主机发送ARP包，ARP包内包含了目的IP，源IP，目的MAC，源MAC，其中目的MAC地址为广播地址,FF-FF-FF-FF-FF-FF,即向局域网内所有主机发送一个ARP请求，那么其他主机收到这个请求之后则会向请求来源返回一个数据包。在这个返回的数据包中包含了自身的MAC地址。那么本机收到这些返回的数据包进行解析之后便会得到局域网内所有主机的MAC地址。<br><img src="/images/WinPcap-3.jpg" title="[ARP报文结构]"><br>构造ARP报文结构：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">//14字节以太网首部</span><br><span class="line">struct EthernetHeader</span><br><span class="line">&#123;</span><br><span class="line">    u_char DestMAC[6];    //目的MAC地址 6字节</span><br><span class="line">    u_char SourMAC[6];   //源MAC地址 6字节</span><br><span class="line">    u_short EthType;         //上一层协议类型，如0x0800代表上一层是IP协议，0x0806为arp  2字节</span><br><span class="line">&#125;;</span><br><span class="line">//28字节ARP帧结构</span><br><span class="line">struct ArpHeader</span><br><span class="line">&#123;</span><br><span class="line">    unsigned short hdType;   //硬件类型</span><br><span class="line">    unsigned short proType;   //协议类型</span><br><span class="line">    unsigned char hdSize;   //硬件地址长度</span><br><span class="line">    unsigned char proSize;   //协议地址长度</span><br><span class="line">    unsigned short op;   //操作类型，ARP请求（1），ARP应答（2），RARP请求（3），RARP应答（4）。</span><br><span class="line">    u_char smac[6];   //源MAC地址</span><br><span class="line">    u_char sip[4];   //源IP地址</span><br><span class="line">    u_char dmac[6];   //目的MAC地址</span><br><span class="line">    u_char dip[4];   //目的IP地址</span><br><span class="line">&#125;;</span><br><span class="line">//定义整个arp报文包，总长度42字节</span><br><span class="line">struct ArpPacket &#123;</span><br><span class="line">    EthernetHeader ed;</span><br><span class="line">    ArpHeader ah;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h3 id="以太网数据报（数据链路层）"><a href="#以太网数据报（数据链路层）" class="headerlink" title="以太网数据报（数据链路层）"></a>以太网数据报（数据链路层）</h3><p>以太网是目前使用最广泛的局域网技术。以太网技术作为数据链路层的一种简单、高效的技术，以其为核心，与其它物理层技术相结合，形成以太网技术接入体系。<br><img src="/images/WinPcap-4.jpg" title="[以太网数据包格式]"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//以太网协议头</span><br><span class="line">struct ether_header</span><br><span class="line">&#123;</span><br><span class="line">	u_int8_t ether_dhost[6]; //目的Mac地址</span><br><span class="line">	u_int8_t ether_shost[6]; //源Mac地址</span><br><span class="line">	u_int16_t ether_type;    //协议类型</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h3 id="IP数据报（网络层）"><a href="#IP数据报（网络层）" class="headerlink" title="IP数据报（网络层）"></a>IP数据报（网络层）</h3><p>IP协议提供不可靠无连接的数据报传输服务，IP层提供的服务是通过IP层对数据报的封装与拆封来实现的。IP数据报的格式分为报头区和数据区两大部分，其中报头区是为了正确传输高层数据而加的各种控制信息，数据区包括高层协议需要传输的数据。<br><img src="/images/WinPcap-5.jpg" title="[IP数据包格式]"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">struct ip_header</span><br><span class="line">&#123;</span><br><span class="line">	u_int8_t    ip_version:4,ip_header_length:4;			//版本4 + 首部长度4</span><br><span class="line">	u_int8_t    ip_tos;							//服务类型</span><br><span class="line">	u_int16_t   ip_length;						//总长度</span><br><span class="line">	u_int16_t   ip_id;							//标识</span><br><span class="line">	u_int16_t   ip_off;							//偏移		</span><br><span class="line">	u_int8_t    ip_ttl;							//生存时间</span><br><span class="line">	u_int8_t    ip_protocol;						//协议类型</span><br><span class="line">	u_int16_t   ip_checksum;</span><br><span class="line">	struct in_addr ip_souce_address;				//32位的IPv4地址,in_addr_t一般为32位的unsigned int，</span><br><span class="line">	struct in_addr ip_destination_address;			//其字节顺序为网络字节序,即该无符号数采用大端字节序,其中每8位表示一个IP地址中的一个数值。</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h3 id="TCP协议（运输层）"><a href="#TCP协议（运输层）" class="headerlink" title="TCP协议（运输层）"></a>TCP协议（运输层）</h3><p>TCP协议的数据报头的解析，其长度为20个字节。<br><img src="/images/WinPcap-6.jpg" title="[TCP报文格式]"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">//TCP协议头</span><br><span class="line">#define __LITTLE_ENDIAN_BITFIELD</span><br><span class="line">//小端字节序</span><br><span class="line">struct tcphdr </span><br><span class="line">&#123;</span><br><span class="line">	u_int16_t   source_port;         //源地址端口</span><br><span class="line">	u_int16_t   dest_port;           //目的地址端口</span><br><span class="line">	u_int32_t   seq;            //序列号</span><br><span class="line">	u_int32_t   ack_seq;        //确认序列号</span><br><span class="line">#if defined(__LITTLE_ENDIAN_BITFIELD)</span><br><span class="line">	u_int16_t res1:4,   //保留</span><br><span class="line">	doff:4,				//偏移</span><br><span class="line">	fin:1,              //关闭连接标志</span><br><span class="line">	syn:1,              //请求连接标志</span><br><span class="line">	rst:1,              //重置连接标志</span><br><span class="line">	psh:1,              //接收方尽快将数据放到应用层标志</span><br><span class="line">	ack:1,              //确认序号标志</span><br><span class="line">	urg:1,              //紧急指针标志</span><br><span class="line">	ece:1,              //拥塞标志位</span><br><span class="line">	cwr:1;              //拥塞标志位</span><br><span class="line">#elif defined(__BIG_ENDIAN_BITFIELD)</span><br><span class="line">	u_int16_t doff:4,   //偏移</span><br><span class="line">	res1:4,             //保留</span><br><span class="line">	cwr:1,              //拥塞标志位</span><br><span class="line">	ece:1,              //拥塞标志位</span><br><span class="line">	urg:1,              //紧急指针标志</span><br><span class="line">	ack:1,              //确认序号标志</span><br><span class="line">	psh:1,              //接收方尽快将数据放到应用层标志</span><br><span class="line">	rst:1,              //重置连接标志</span><br><span class="line">	syn:1,              //请求连接标志</span><br><span class="line">	fin:1;              //关闭连接标志</span><br><span class="line">#else</span><br><span class="line">	u_int16_t	flag;</span><br><span class="line">#endif </span><br><span class="line">	u_int16_t   window;         //滑动窗口大小</span><br><span class="line">	u_int16_t   check;          //校验和</span><br><span class="line">	u_int16_t   urg_ptr;        //紧急字段指针</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="UDP协议（运输层）"><a href="#UDP协议（运输层）" class="headerlink" title="UDP协议（运输层）"></a>UDP协议（运输层）</h3><img src="/images/WinPcap-7.jpg" title="[UDP数据报文格式]">
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//UDP协议头</span><br><span class="line">struct udphdr</span><br><span class="line">&#123;</span><br><span class="line">	u_int16_t source_port;	//源地址端口</span><br><span class="line">	u_int16_t dest_port;    //目的地址端口</span><br><span class="line">	u_int16_t len;			//UDP长度</span><br><span class="line">	u_int16_t check;		//UDP校验和</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="函数子功能设计"><a href="#函数子功能设计" class="headerlink" title="函数子功能设计"></a>函数子功能设计</h2><h3 id="打印获取的网络适配器信息"><a href="#打印获取的网络适配器信息" class="headerlink" title="打印获取的网络适配器信息"></a>打印获取的网络适配器信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">void ifprint(pcap_if_t *d)</span><br><span class="line">&#123;</span><br><span class="line">	pcap_addr_t *a;//网络适配器的地址用来存储变量</span><br><span class="line">	//打印网卡信息</span><br><span class="line">	printf(&quot;\n%d.\n\t%s\n&quot;,++i,d-&gt;name);</span><br><span class="line">	if(d-&gt;description)</span><br><span class="line">	&#123;</span><br><span class="line">		////打印适配器的描述信息</span><br><span class="line">		printf(&quot;\tdescription:(%s)\n&quot;,d-&gt;description);</span><br><span class="line">	&#125;else&#123;</span><br><span class="line">		//适配器不存在描述信息</span><br><span class="line">		printf(&quot;\t(No description available)\n&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	//打印本地环回地址</span><br><span class="line">	printf(&quot;\tLoopback: %s\n&quot;,(d-&gt;flags &amp; PCAP_IF_LOOPBACK)?&quot;yes&quot;:&quot;no&quot;);</span><br><span class="line">	for (a=d-&gt;addresses;a != NULL;a=a-&gt;next)</span><br><span class="line">	&#123;</span><br><span class="line">		//sa_family ：是2字节的地址家族，一般都是“AF_xxx”的形式，</span><br><span class="line">		//它的值包括三种：AF_INET，AF_INET6和AF_UNSPEC。</span><br><span class="line">		switch (a-&gt;addr-&gt;sa_family)</span><br><span class="line">		&#123;</span><br><span class="line">		case AF_INET:</span><br><span class="line">			//地址类型</span><br><span class="line">			printf(&quot;\tAddress Family Name:: AF_INET\n&quot;);</span><br><span class="line">			if(a-&gt;addr)</span><br><span class="line">			&#123;</span><br><span class="line">				//Ipv4地址</span><br><span class="line">				printf(&quot;\tAddress:%s\n&quot;,iptos(((struct sockaddr_in *)a-&gt;addr)-&gt;sin_addr.s_addr));</span><br><span class="line">			&#125;</span><br><span class="line">			if(a-&gt;netmask)</span><br><span class="line">			&#123;</span><br><span class="line">				//子网掩码</span><br><span class="line">				printf(&quot;\tNetmask:%s\n&quot;,iptos(((struct sockaddr_in *)a-&gt;netmask)-&gt;sin_addr.s_addr));</span><br><span class="line">			&#125;</span><br><span class="line">			if(a-&gt;broadaddr)</span><br><span class="line">			&#123;</span><br><span class="line">				//广播地址</span><br><span class="line">				printf(&quot;\tBroadcast Address:%s\n&quot;,iptos(((struct sockaddr_in *)a-&gt;broadaddr)-&gt;sin_addr.s_addr));</span><br><span class="line">			&#125;</span><br><span class="line">			if(a-&gt;dstaddr)</span><br><span class="line">			&#123;</span><br><span class="line">				//目的地址</span><br><span class="line">				printf(&quot;\tDestination Address:%s\n&quot;,iptos(((struct sockaddr_in *)a-&gt;dstaddr)-&gt;sin_addr.s_addr));</span><br><span class="line">			&#125;</span><br><span class="line">			break;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="将数字类型的IP地址转换成点分十进制"><a href="#将数字类型的IP地址转换成点分十进制" class="headerlink" title="将数字类型的IP地址转换成点分十进制"></a>将数字类型的IP地址转换成点分十进制</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">char * iptos(u_long in)</span><br><span class="line">&#123; </span><br><span class="line">	static char output[IPTOSBUFFERS][3*4+3+1];</span><br><span class="line">	static short which;//静态变量</span><br><span class="line">	u_char *p; </span><br><span class="line">	p = (u_char *)&amp;in;</span><br><span class="line">	if(which+1 == IPTOSBUFFERS)</span><br><span class="line">	&#123;</span><br><span class="line">		which=0;</span><br><span class="line">	&#125;else</span><br><span class="line">	&#123;</span><br><span class="line">		which++;</span><br><span class="line">	&#125;</span><br><span class="line">	//转换为点分十进制</span><br><span class="line">	sprintf(output[which],&quot;%d.%d.%d.%d&quot;,p[0],p[1],p[2],p[3]);</span><br><span class="line">	return output[which];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="以太网协议分析"><a href="#以太网协议分析" class="headerlink" title="以太网协议分析"></a>以太网协议分析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">//1.pcap_loop中的user参数;2.捕获到的基本信息;3.loop捕获到的数据包内容</span><br><span class="line">void ethernet_protocol_packet_callback(u_char *argument,const struct pcap_pkthdr* packet_header,const u_char* packet_content)</span><br><span class="line">&#123;</span><br><span class="line">	u_short ethernet_type;</span><br><span class="line">	struct ether_header *ethernet_protocol;</span><br><span class="line">	u_char *mac_string;</span><br><span class="line">	static int packet_number = 1;</span><br><span class="line">	struct tm * ltime;</span><br><span class="line">	//时间戳处理</span><br><span class="line">	char timestr[16];</span><br><span class="line">	time_t local_tv_sec;</span><br><span class="line">	local_tv_sec= packet_header-&gt;ts.tv_sec;</span><br><span class="line">    ltime=localtime(&amp;local_tv_sec);</span><br><span class="line">	strftime(timestr, sizeof timestr, &quot;%H:%M:%S&quot;, ltime);</span><br><span class="line">	printf(&quot;\n\n&quot;);</span><br><span class="line">	printf(&quot;捕获第%d个网络数据包\n&quot;,packet_number);</span><br><span class="line">	printf(&quot;捕获时间:%s\n&quot;,timestr);</span><br><span class="line">	printf(&quot;数据包长度:%d\n&quot;,packet_header-&gt;len);</span><br><span class="line">	printf(&quot;---------以太网协议---------\n&quot;);</span><br><span class="line">	ethernet_protocol=(struct ether_header*)packet_content;//获得数据包内容</span><br><span class="line">	//othohs,作用是将一个16位数由网络字节顺序转换为主机字节顺序。</span><br><span class="line">	ethernet_type=ntohs(ethernet_protocol-&gt;ether_type);//获得以太网类型</span><br><span class="line">	printf(&quot;以太网类型:%04x\n&quot;,ethernet_type);</span><br><span class="line">	switch (ethernet_type)</span><br><span class="line">	&#123;</span><br><span class="line">	case 0x0800: printf(&quot;上层协议是IPv4协议\n&quot;);break;</span><br><span class="line">	case 0x0806: printf(&quot;上层协议是ARP协议\n&quot;);break;</span><br><span class="line">	case 0x8035: printf(&quot;上层协议是RARP协议\n&quot;);break;</span><br><span class="line">	case 0x814C: printf(&quot;上层协议是简单网络管理协议SNMP\n&quot;);break;</span><br><span class="line">	case 0x8137: printf(&quot;上层协议是因特网包交换（IPX：Internet Packet Exchange）\n&quot;);break;</span><br><span class="line">	case 0x86DD: printf(&quot;上层协议是IPv6协议\n&quot;);break;</span><br><span class="line">	case 0x880B: printf(&quot;上层协议是点对点协议（PPP：Point-to-Point Protocol）\n&quot;);break;</span><br><span class="line">	default:break;</span><br><span class="line">	&#125;</span><br><span class="line">	mac_string=ethernet_protocol-&gt;ether_shost;</span><br><span class="line">	printf(&quot;MAC帧源地址:%02x:%02x:%02x:%02x:%02x:%02x\n&quot;,*mac_string,*(mac_string+1),*(mac_string+2),*(mac_string+3),*(mac_string+4),*(mac_string+5));</span><br><span class="line">	mac_string=ethernet_protocol-&gt;ether_dhost;</span><br><span class="line">	printf(&quot;MAC帧目的地址:%02x:%02x:%02x:%02x:%02x:%02x\n&quot;,*mac_string,*(mac_string+1),*(mac_string+2),*(mac_string+3),*(mac_string+4),*(mac_string+5));</span><br><span class="line">	if(ethernet_type==0x0800)//继续分析IP协议</span><br><span class="line">	&#123;</span><br><span class="line">		ip_protool_packet_callback (argument,packet_header,packet_content+sizeof(ether_header));</span><br><span class="line">	&#125;</span><br><span class="line">	printf(&quot;\n&quot;);</span><br><span class="line">	packet_number++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="IP协议分析"><a href="#IP协议分析" class="headerlink" title="IP协议分析"></a>IP协议分析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">void ip_protool_packet_callback(u_char *argument,const struct pcap_pkthdr* packet_header,const u_char* packet_content)</span><br><span class="line">&#123;</span><br><span class="line">	struct ip_header *ip_protocol;</span><br><span class="line">	u_int header_length=0;</span><br><span class="line">	u_int offset;</span><br><span class="line">	u_char tos;</span><br><span class="line">	u_int16_t checksum;</span><br><span class="line">	ip_protocol = (struct ip_header *)packet_content;</span><br><span class="line">	checksum =ntohs(ip_protocol-&gt;ip_checksum);</span><br><span class="line">	tos = ip_protocol-&gt;ip_tos;</span><br><span class="line">	offset = ntohs(ip_protocol-&gt;ip_off);</span><br><span class="line">	printf(&quot;---------IP协议---------\n&quot;);</span><br><span class="line">	printf(&quot;版本号:%d\n&quot;, ip_protocol-&gt;ip_version);</span><br><span class="line">	printf(&quot;首部长度:%d\n&quot;,header_length);</span><br><span class="line">	printf(&quot;服务质量:%d\n&quot;,tos);</span><br><span class="line">	printf(&quot;总长度:%d\n&quot;,ntohs(ip_protocol-&gt;ip_length));</span><br><span class="line">	printf(&quot;标识:%d\n&quot;,ntohs(ip_protocol-&gt;ip_id));</span><br><span class="line">	printf(&quot;偏移:%d\n&quot;,(offset &amp; 0x1fff) * 8);</span><br><span class="line">	printf(&quot;生存时间:%d\n&quot;,ip_protocol-&gt;ip_ttl);</span><br><span class="line">	printf(&quot;协议类型:%d\n&quot;,ip_protocol-&gt;ip_protocol);</span><br><span class="line">	printf(&quot;检验和:%d\n&quot;,checksum);</span><br><span class="line">	printf(&quot;源IP地址:%s\n&quot;, inet_ntoa(ip_protocol-&gt;ip_souce_address));</span><br><span class="line">	printf(&quot;目的地址:%s\n&quot;, inet_ntoa(ip_protocol-&gt;ip_destination_address));</span><br><span class="line">	switch (ip_protocol-&gt;ip_protocol)</span><br><span class="line">	&#123;</span><br><span class="line">	case 1: printf(&quot;上层协议是ICMP协议\n&quot;);break;</span><br><span class="line">	case 2: printf(&quot;上层协议是IGMP协议\n&quot;);break;</span><br><span class="line">	case 6: </span><br><span class="line">		&#123;</span><br><span class="line">			//printf(&quot;上层协议是TCP协议\n&quot;);</span><br><span class="line">			tcp_protool_packet_callback (argument,packet_header,packet_content+sizeof(ip_header));</span><br><span class="line">		&#125;</span><br><span class="line">		break;</span><br><span class="line">	case 17: </span><br><span class="line">		&#123;</span><br><span class="line">			//printf(&quot;上层协议是UDP协议\n&quot;);</span><br><span class="line">			udp_protool_packet_callback (argument,packet_header,packet_content+sizeof(ip_header));</span><br><span class="line">		&#125;</span><br><span class="line">		break;</span><br><span class="line">	default:break;</span><br><span class="line">	&#125;	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="TCP协议分析"><a href="#TCP协议分析" class="headerlink" title="TCP协议分析"></a>TCP协议分析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">void tcp_protool_packet_callback(u_char *argument,const struct pcap_pkthdr* packet_header,const u_char* packet_content)</span><br><span class="line">&#123;</span><br><span class="line">	struct tcphdr *tcp_protocol;</span><br><span class="line">	u_int header_length=0;</span><br><span class="line">	u_int offset;</span><br><span class="line">	u_char tos;</span><br><span class="line">	u_int16_t checksum;</span><br><span class="line">	tcp_protocol = (struct tcphdr *) packet_content;</span><br><span class="line">	checksum =ntohs(tcp_protocol-&gt;check);</span><br><span class="line">	printf(&quot;---------TCP协议---------\n&quot;);</span><br><span class="line">	printf(&quot;源端口:%d\n&quot;, ntohs(tcp_protocol-&gt;source_port));</span><br><span class="line">	printf(&quot;目的端口:%d\n&quot;,ntohs(tcp_protocol-&gt;dest_port));</span><br><span class="line">	printf(&quot;SEQ:%d\n&quot;,ntohl(tcp_protocol-&gt;seq));</span><br><span class="line">	printf(&quot;ACK SEQ:%d\n&quot;,ntohl(tcp_protocol-&gt;ack_seq));</span><br><span class="line">	printf(&quot;check:%d\n&quot;,checksum);</span><br><span class="line">	if(ntohs(tcp_protocol-&gt;source_port)==80 || ntohs(tcp_protocol-&gt;dest_port)==80)</span><br><span class="line">	&#123;</span><br><span class="line">		//http协议</span><br><span class="line">		printf(&quot;http data:\n%s\n&quot;,packet_content+sizeof(tcphdr));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="UDP协议分析"><a href="#UDP协议分析" class="headerlink" title="UDP协议分析"></a>UDP协议分析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">void udp_protool_packet_callback(u_char *argument,const struct pcap_pkthdr* packet_header,const u_char* packet_content)</span><br><span class="line">&#123;</span><br><span class="line">	struct udphdr *udp_protocol;</span><br><span class="line">	u_int header_length=0;</span><br><span class="line">	u_int16_t checksum;</span><br><span class="line">	udp_protocol = (struct udphdr *) packet_content;</span><br><span class="line">	checksum =ntohs(udp_protocol-&gt;check);</span><br><span class="line">	printf(&quot;---------UDP协议---------\n&quot;);</span><br><span class="line">	printf(&quot;源端口:%d\n&quot;, udp_protocol-&gt;source_port);</span><br><span class="line">	printf(&quot;目的端口:%d\n&quot;,udp_protocol-&gt;dest_port);</span><br><span class="line">	printf(&quot;len:%d\n&quot;,udp_protocol-&gt;len);</span><br><span class="line">	printf(&quot;check:%d\n&quot;,checksum);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="发送ARP数据包"><a href="#发送ARP数据包" class="headerlink" title="发送ARP数据包"></a>发送ARP数据包</h1><p>发包流程简述图<br><img src="/images/WinPcap-8.jpg" title="[发包流程简述图]"></p>
+<h1 id="捕获并分析数据包"><a href="#捕获并分析数据包" class="headerlink" title="捕获并分析数据包"></a>捕获并分析数据包</h1><p>抓包流程简述图<br><img src="/images/WinPcap-9.jpg" title="[数据包分析流程图]"></p>
+
+    </div>
+</div>
+
+<div class="cube-article-nav">
+    <ul>
+        
+        
+        <li class="next">
+            <a href="/2018/08/16/hello-world/">
+                Hello World
+                <i class="cube-icon cube-next" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+<!-- TODO 根据theme.comment的内容进行入口选择 -->
+
+
+
+        </div>
+        <div class="cube-right">
+            
+
+<div class="cube-search cube-sidebar" id="cube-search">
+    <div class="search-container">
+        <input type="text" placeholder="Search" class="cube-search-input" id="cube-search-input">
+        <i class="cube-icon cube-icon-search cube-search-submit" aria-hidden="true"></i>
+    </div>
+    <!-- TODO 通过给window赋一个全局变量，通过脚本赋值 -->
+</div>
+<script>
+    (function (window) {
+        'use strict';
+        window.searchModule = {}
+        window.searchModule.JSONUrl = '/content.json'
+        window.searchModule.rootUrl = '/'
+    })(window)
+</script>
+<div class="cube-search-form">
+    <div class="cube-search-control">
+        <input type="text" placeholder="Search" class="search-input">
+        <a class="close-button">
+            <i class="cube-icon cube-close" aria-hidden="true"></i>
+        </a>
+    </div>
+    <div class="cube-search-result"></div>
+</div>
+
+
+<div class="cube-author cube-sidebar" id="cube-author">
+    
+    
+    <style>
+        @media(min-width: 768px) {
+            .cube-author img {
+                margin-top: 40px;
+                margin-bottom: 10px;
+            }
+        }
+        @media(max-width: 1120px) and (min-width: 768px) {
+            .cube-author img {
+                width: 128px;
+                height: 128px;
+            }
+        }
+        @media(min-width: 1120px) {
+            .cube-author img {
+                width: 160px;
+                height: 160px;
+            }
+        }
+    </style>
+    
+    <img src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1511105720318&amp;di=cfe23c1b52ca59da55fffe3c18a086de&amp;imgtype=0&amp;src=http%3A%2F%2Fimg5.duitang.com%2Fuploads%2Fitem%2F201609%2F14%2F20160914201653_4Brj8.png" alt="avatar" class="cube-avatar">
+    
+    
+    <span>Hizex</span>
+    
+    
+    <div class="count">
+        <a class="count articles"><span>2</span>Article</a>
+        <a class="count tags"><span>1</span>Tags</a>
+        <a class="count categories"><span>0</span>Categories</a>
+    </div>
+</div>
+
+
+
+<div class="cube-recent-posts cube-sidebar" id="cube-recent-posts">
+    <div class="title">
+        <a>Recent Posts</a>
+    </div>
+    <ul class="list">
+        
+        
+        <li>
+            <!-- TODO 如果文章要显示图片，那么在front-matter上添加preview属性(url or path) -->
+            
+            <div class="normal">
+                <p class="index first">
+                    <span>1</span>
+                </p>
+                <p class="title">
+                    <a href="/2018/08/20/C：基于WinPcap的网络抓包/" title="C：基于WinPcap的网络抓包">C：基于WinPcap的网络抓包</a>
+                </p>
+            </div>
+            
+        </li>
+        
+        
+        
+        <li>
+            <div class="normal">
+                <p class="index">
+                    <span>2</span>
+                </p>
+                <p class="title">
+                    <a href="/2018/08/16/hello-world/" title="Hello World">Hello World</a>
+                </p>
+            </div>
+        </li>
+        
+        
+    </ul>
+</div>
+
+
+
+
+
+<div class="cube-tagcloud cube-sidebar" id="cube-tagcloud">
+    <div class="title">
+        <a href="/tags">Tagcloud</a>
+    </div>
+    <div class="cube-boxs">
+        
+        
+        <div class="cube-box-bg ">
+            <a href="/tags/C/">#C</a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="cube-links cube-sidebar" id="cube-links">
+    <div class="title">
+        <a>Links</a>
+    </div>
+    <ul class="list">
+        
+        <li>
+            
+            
+            <img src="http://cube-1252774894.cosgz.myqcloud.com/links/GitHub.png">
+            
+            <a href="https://github.com/ZEROKISEKI" target="_blank">GitHub</a>
+        </li>
+        
+        <li>
+            
+            
+            <img src="http://cube-1252774894.cosgz.myqcloud.com/links/Coding.png">
+            
+            <a href="https://coding.net/u/SORA1" target="_blank">Coding</a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+    </div>
+</div>
+<footer class="cube-footer">
+    
+© 2017 Hizex
+
+<br>
+Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>.&nbsp;Theme by <a href="https://github.com/ZEROKISEKI" target="_blank">AONOSORA</a>
+</footer>
+<!-- inject:script -->
+<script src="/js/script.js"></script>
+<!-- endinject -->
+<div class="cube-loading out"></div>
+</body>
+</html>
