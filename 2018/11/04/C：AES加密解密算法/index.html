@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="author" content="Hizex">
+    
+    
+    
+    
+    
+    
+    <title>C：AES加密解密算法 | zero</title>
+    <!-- inject:style -->
+    <link href="/css/style.css" rel="stylesheet" type="text/css">
+    <!-- endinject -->
+    <style>
+        .cube-loading {
+            top: 0;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: url('/images/lg/loading.gif') no-repeat center center;
+            background-color: rgba(0,0,0,.7);
+        }
+
+        .cube-loading.out {
+            display: none;
+        }
+
+        .cube-loading:before {
+            display: block;
+            content: 'Loading';
+            position: relative;
+            width: 100%;
+            top: 50%;
+            right: -50%;
+            color: #fff;
+        }
+
+        @media(max-width: 768px) {
+            .cube-loading:before {
+                font-size: 1.2em;
+                transform: translate(-24px,20px);
+                -webkit-transform: translate(-24px,20px);
+                -o-transform: translate(-24px,20px);
+                -ms-transform: translate(-24px,20px);
+            }
+        }
+
+        @media(min-width: 768px) {
+            .cube-loading:before {
+
+            }
+        }
+    </style>
+    
+</head>
+<body>
+<div class="cube-body">
+    <nav id="cube-top-memu" class="cube-menu">
+    <ul class="cube-menu-collapse">
+        
+        <li>
+            <i class="cube-icon cube-icon-home" aria-hidden="true"></i>
+            <a href="/">首页</a>
+        </li>
+        
+        <li>
+            <i class="cube-icon cube-icon-archive" aria-hidden="true"></i>
+            <a href="/archives">归档</a>
+        </li>
+        
+        <li>
+            <i class="cube-icon cube-icon-categories" aria-hidden="true"></i>
+            <a href="/categories">分类</a>
+        </li>
+        
+        <li>
+            <i class="cube-icon cube-icon-tags" aria-hidden="true"></i>
+            <a href="/tags">标签</a>
+        </li>
+        
+        <li>
+            <i class="cube-icon cube-icon-about" aria-hidden="true"></i>
+            <a href="/about-me">关于我</a>
+        </li>
+        
+    </ul>
+</nav>
+<nav class="cube-side-menu" id="cube-side-menu">
+    <ul class="cube-menu-list">
+        
+        <li>
+            <a class="lrc-control">Open Lyrics</a>
+        </li>
+        
+        <li>
+            <a class="scroll-to-top">Top</a>
+        </li>
+    </ul>
+</nav>
+    <header class="cube-header" id="cube-header">
+    <img src=" background.png " alt="头部背景图片">
+    
+    <div class="cube-type">
+        <span class="cube-typed-title">Walking steadily</span>
+        <span class="cube-typed-cursor">|</span>
+    </div>
+    
+</header>
+
+    <style>
+        nav.cube-menu:before {
+            content: '';
+            visibility: hidden;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 44px;
+        
+            filter: blur(5px);
+            -webkit-filter: blur(5px);
+        
+            z-index: -1;
+            background-image: url('/images/background.png');
+            background-repeat: no-repeat;
+            background-position: center -206px;
+            background-size: cover;
+            background-color: transparent;
+        }
+
+        header.cube-background.cube-header-background {
+            visibility: hidden;
+            background-image: url('/images/background.png');
+            background-position: center -250px;
+        }
+    </style>
+    <header class="cube-background cube-header-background">
+        
+        <div class="cube-type">
+            <span class="cube-typed-title">Walking steadily</span>
+            <span class="cube-typed-cursor">|</span>
+        </div>
+        
+    </header>
+    <div class="load-header-background"></div>
+    <script>
+        (function (window) {
+
+            window.headerModule = {}
+            window.headerModule.image = {
+                width: '2000',
+                height: '1414'
+            }
+
+        })(window)
+    </script>
+    
+    <div class="cube-content">
+        <div class="cube-left">
+            <div class="cube-article">
+    <h1 class="title">C：AES加密解密算法</h1>
+    
+    <div class="cube-article-header">
+        <div class="cube-article-date">
+            <i class="cube-icon cube-icon-date" aria-hidden="true"></i>
+            <!-- moment.js对象 -->
+            2018-11-04
+        </div>
+        <div class="cube-article-tags">
+    <i class="cube-icon cube-icon-tag" aria-hidden="true"></i>
+    
+    <a href="/tags/C/">#C</a>
+    
+    <a href="/tags/密码学/">#密码学</a>
+    
+</div>
+    </div>
+    
+    <div class="cube-article-content cube-markdown">
+        
+        <p>一开学就猝不及防来了个密码学算法程序设计。。。仿佛又回到上学期末被密码学支配的恐惧，最早五月的一科考试，全寝室就我一人考密码学啊喂喂喂。<br>行8终于码完了AES，猪命要紧， <strong>在 也 不 熬 夜 了 ！！</strong><br><img src="/images/aha.jpg"><br><a id="more"></a></p>
+<h1 id="AES算法原理简单介绍"><a href="#AES算法原理简单介绍" class="headerlink" title="AES算法原理简单介绍"></a>AES算法原理简单介绍</h1><p>AES算法中，初始状态矩阵由为128bits明文分组构成，以字节为单位，则总共有16bytes。<br>AES的基本运算单位是字节（Byte），加密和解密过程都是在一个4*4的字节矩阵上运作，这个矩阵又称为“体（state）”或者“状态”。字节矩阵初始值是一个明文块（块/分组，block）。<br><img src="/images/AES-1.png" title="[初始字节矩阵]"><br>加密和解密过程都需要进行密钥扩展：Rijndael算法的密钥同样以字节为单位进行变换，用一个4行的二维矩阵来表示。密钥按照矩阵的列进行分组，密钥比特的总数等于明文分组长度乘以轮数加1。</p>
+<h2 id="AES加密算法"><a href="#AES加密算法" class="headerlink" title="AES加密算法"></a>AES加密算法</h2><img src="/images/AES-2.png" title="[AES算法加密结构]">
+<h3 id="字节代替"><a href="#字节代替" class="headerlink" title="字节代替"></a>字节代替</h3><p>字节代替（SubBytes）：通过一个非线性的替换函数，用查找S盒表的方式把每个字节替换成对应的字节。S盒是一个16*16的矩阵。</p>
+<h3 id="行移位"><a href="#行移位" class="headerlink" title="行移位"></a>行移位</h3><p>行移位（ShiftRows）：将矩阵中的每行以字节为单位进行循环左移位。每一行循环左移的偏移量由明文分组的大小和所在行数共同决定。</p>
+<h3 id="列混合"><a href="#列混合" class="headerlink" title="列混合"></a>列混合</h3><p>列混合（MixColumns）：为了充分混合矩阵中各个直行的操作。这个步骤使用线性转换来混合每行内的四个字节。将输入的状态矩阵的每列与一固定的多项式在有限域GF（2^8）上的相乘，然后模多项式x^4+1。</p>
+<h3 id="轮密钥加"><a href="#轮密钥加" class="headerlink" title="轮密钥加"></a>轮密钥加</h3><p>轮密钥加（AddRoundKey）：将列混合的输出状态矩阵中的每一个字节都与该次循环的子密钥做异或逻辑运算。</p>
+<h2 id="AES解密算法"><a href="#AES解密算法" class="headerlink" title="AES解密算法"></a>AES解密算法</h2><img src="/images/AES-3.png" title="[AES算法解密结构]">
+<h3 id="逆行移位"><a href="#逆行移位" class="headerlink" title="逆行移位"></a>逆行移位</h3><p>逆行移位（InvShifrRows）：将矩阵中的每行以字节为单位进行循环右移位。</p>
+<h3 id="逆字节替代"><a href="#逆字节替代" class="headerlink" title="逆字节替代"></a>逆字节替代</h3><p>逆字节替代（InvSubBytes）：与加密过程的字节替代相似，将输入的状态矩阵的每一个字节通过查表操作替换为表中对应字节，只是查表操作变为查逆S盒。</p>
+<h3 id="逆列混合"><a href="#逆列混合" class="headerlink" title="逆列混合"></a>逆列混合</h3><p>逆列混合（InMixColumns）：使用另一个常数矩阵乘以矩阵state得到新的state矩阵。</p>
+<h3 id="轮密钥加-1"><a href="#轮密钥加-1" class="headerlink" title="轮密钥加"></a>轮密钥加</h3><p>轮密钥加（AddRoundKey）：矩阵中的每一个字节都与该次循环的子密钥做异或逻辑运算。</p>
+<h1 id="核心模块的函数说明和实现方式"><a href="#核心模块的函数说明和实现方式" class="headerlink" title="核心模块的函数说明和实现方式"></a>核心模块的函数说明和实现方式</h1><img src="/images/AES-5.png" title="[函数调用结构图]">
+<h2 id="密钥扩展"><a href="#密钥扩展" class="headerlink" title="密钥扩展"></a>密钥扩展</h2><p>使用二维无符号字符数组k[44][4]来存放每一轮的轮密钥，每一轮轮密钥为128bit。<br><img src="/images/AES-4.png" title="[轮密钥选择]"><br>当k的行数i不是4的倍数时，Ki=Ki-4⊕Ki-1；当k的行数i是4的倍数时，Ki=Ki-4⊕T（Ki-1）。T（）函数的运算方法如下：<br>（1）将Ki-1列以字节为单位循环左移1字节；<br>（2）将循环左移之后的输出进性字节代替；<br>（3）根据Rocn常量表得到Rcon[i/Nk]值；<br>（4）将步骤2与步骤3的结果异或。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">void extendKey()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		if( kNum%4 != 0)&#123;</span><br><span class="line">			for(j=0; j&lt;4; j++&#123;</span><br><span class="line">				k[kNum][j] = k[kNum-4][j] ^ k[kNum-1][j];</span><br><span class="line">				&#125;</span><br><span class="line">		&#125;else&#123;for(j=0; j&lt;3; j++)&#123;//左移动1字节</span><br><span class="line">				tmp[j] = k[kNum-1][j+1];&#125;</span><br><span class="line">			tmp[j] = k[kNum-1][0];	//0-&gt;4</span><br><span class="line">			//字节代替</span><br><span class="line">			for(j=0; j&lt;4; j++)&#123;</span><br><span class="line">					left = tmp[j] &gt;&gt; 4;</span><br><span class="line">				right = tmp[j] &lt;&lt; 4;</span><br><span class="line">				right = right &gt;&gt; 4;</span><br><span class="line">				tmp[j] = Sbox[left][right];</span><br><span class="line">				&#125;</span><br><span class="line">			rc = Rcon[ kNum/4];</span><br><span class="line">			tmp[0] = tmp[0] ^ rc;</span><br><span class="line">			for(j=0; j&lt;4; j++)&#123;</span><br><span class="line">				k[kNum][j] = k[kNum-4][j] ^ tmp[j];</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		kNum++;</span><br><span class="line">		if(kNum %4 == 0)&#123;</span><br><span class="line">			return ;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="字节替代"><a href="#字节替代" class="headerlink" title="字节替代"></a>字节替代</h2><p>由于定义的数组为4*4矩阵，所以需要取出数组中值的左4个bit作为S盒的列输入，右4个bit作为S盒的行输入。使用C语言中的左移运算符&lt;&lt;及右移运算符&gt;&gt;来获取4bit的值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">for(i=0; i&lt;4; i++)&#123;</span><br><span class="line">	for(j=0; j&lt;4; j++)&#123;	</span><br><span class="line">		right = k[(roundNum-1)*4+i][j] &gt;&gt; 4;</span><br><span class="line">		left = k[(roundNum-1)*4+i][j] &lt;&lt; 4;</span><br><span class="line">		left = left &gt;&gt; 4;</span><br><span class="line">		resOfSub[i][j] = Sbox[left][right]; </span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure><br><img src="/images/AES-7.png"></p>
+<h2 id="行移位-1"><a href="#行移位-1" class="headerlink" title="行移位"></a>行移位</h2><p>第i行循环左移i-1列，shiftnum标记左移列数，resOfSub为前一次字节代替的结果，resOfRows为本次行移位的输出结果。逆行移中，第i行循环右移动i-1列，可看作循环左移4-i列。<br>这个一开始绕了好久写不出来。。。后来哎嘛不就是两个循环么。。。内层循环是每次左移1位，外层循环是将内层执行i-1次。i=1，2，3，4（行）。每行只需要使用一次tmp存第一个元素，然后执行循环左移1bit，移动完成后再将tmp放入最后一个位置。<br>加密：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">shiftnum=0;</span><br><span class="line">	for(i=0; i&lt;4; i++)&#123;</span><br><span class="line">		for(j=0; j&lt;4; j++)&#123;</span><br><span class="line">			resOfRows[j][i] = resOfSub[(shiftnum+j)%4][i];</span><br><span class="line">			&#125;</span><br><span class="line">		shiftnum++;</span><br><span class="line">		&#125;</span><br></pre></td></tr></table></figure><br>解密：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">shiftnum=4;</span><br><span class="line">	for(i=0; i&lt;4; i++)&#123;</span><br><span class="line">		for(j=0; j&lt;4; j++)&#123;</span><br><span class="line">				resOfRows[j][i] = resOfKey[(shiftnum+j)%4][i];</span><br><span class="line">				&#125;</span><br><span class="line">			shiftnum--;</span><br><span class="line">		&#125;</span><br></pre></td></tr></table></figure><br><img src="/images/AES-8.png">        </p>
+<h2 id="列混合-1"><a href="#列混合-1" class="headerlink" title="列混合"></a>列混合</h2><p>列混合是输入矩阵的每列与固定矩阵每行相乘，元素做域上乘法。由于固定矩阵每一行的元素0x02、0x03、0x01、0x01不变，仅顺序改变，Ki行元素为Ki-1行元素循环右移1列得到，故在进行每一行的运算的时候，没有引入矩阵数组，直接将固定矩阵的元素循环使用。<br>例如，（i，j）为输入矩阵第i行每个元素乘以固定矩阵的第j列每个元素，（i，j+1）为输入矩阵第j行乘以第j+1列。而固定矩阵的j+1列为j列循环移动1位得到，即可直接将0x02、0x03、0x01、0x01移动一位，再乘以输入矩阵i行。<br>原本是将输入矩阵与固定矩阵都定义为4*4二维数组来进行运算，但不晓得为啥运算结果老是出错。意识到固定矩阵每行的元素是由上一行循环右移1位得到，所以其实可以不需要列出固定矩阵二维数组。比如在计算第一行的输出结果时，是由矩阵A第一行的每个元素分别与矩阵B第一、二、三、四列每个元素运算得到（1，1）、（1，2）、（1，3）、（1，4），由于固定矩阵的每列元素相同，只是顺序移动1位，（2311-&gt;1231-&gt;1123-&gt;3112），我们可以取第一行值2311作为固定，与输入矩阵的某行做运算时候，输入矩阵的行按照每次移动1位的顺序与2311做运算。<br>加密：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for(i=0; i&lt;4; i++)&#123;</span><br><span class="line">	for(j=0; j&lt;4; j++)&#123;</span><br><span class="line">		resOfCols[i][j] = GF02(resOfRows[i][j%4]) ^ GF03(resOfRows[i][(j+1)%4]) ^ GF01(resOfRows[i][(j+2)%4]) ^ GF01(resOfRows[i][(j+3)%4]);</span><br><span class="line">		&#125;	</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure><br>解密：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for(i=0; i&lt;4; i++)&#123;</span><br><span class="line">	for(j=0; j&lt;4; j++)&#123;</span><br><span class="line">		resOfCols[i][j] = GF0E(resOfKey[i][j%4]) ^ GF0B(resOfKey[i][(j+1)%4]) ^ GF0D(resOfKey[i][(j+2)%4]) ^ GF09(resOfKey[i][(j+3)%4]);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure><br><img src="/images/AES-9.png">        </p>
+<h2 id="轮密钥加-2"><a href="#轮密钥加-2" class="headerlink" title="轮密钥加"></a>轮密钥加</h2><p>将输入与当轮轮密钥左异或运算。<br>加密：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for(i=0; i&lt;4; i++)&#123;</span><br><span class="line">	for(j=0; j&lt;4; j++)&#123;</span><br><span class="line">		resOfKey[i][j] = k[kNum-4+i][j] ^ resOfRows[i][j];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure><br>解密：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">for(i=0; i&lt;4; i++)&#123;</span><br><span class="line">	for(j=0; j&lt;4; j++)&#123;</span><br><span class="line">		resOfKey[i][j] = k[44-(roundNum+1)*4+i][j] ^ resOfSub[i][j];</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure><br><img src="/images/AES-6.png"></p>
+<h2 id="域上乘法"><a href="#域上乘法" class="headerlink" title="域上乘法"></a>域上乘法</h2><p>写了多个子函数层层调用，但是最终都是调用GF02函数，即域上乘以0x02的算法。当判断b7为0或者1的时候，思考了三种算法：（1）比较b与0x08的大小，若b&gt;=0x80，则b7=1；反之，得b7=0。（2）判断b&amp;0x08是否为0，若为0，则b7=0；反之，得b7=1。（3）使用移位符，b&gt;&gt;7，将b右移7个bit，若 b&gt;&gt; == 0x01，则b7=1；反之，得b7=0。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">unsigned char GF01(unsigned char b)&#123;</span><br><span class="line">	return b ;</span><br><span class="line">	&#125;</span><br><span class="line">unsigned char GF02(unsigned char b)&#123;</span><br><span class="line">	if (b &amp; 0x80)&#123;</span><br><span class="line">		return (b&lt;&lt;1);//&amp;0xff; </span><br><span class="line">		&#125;else&#123;</span><br><span class="line">		return ((b&lt;&lt;1)^0x1b);//&amp;0xff; </span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">unsigned char GF03(unsigned char b)&#123;</span><br><span class="line">	return  b ^ GF02(b);</span><br><span class="line">	&#125;</span><br><span class="line">unsigned char GF04(unsigned char b)&#123;</span><br><span class="line">	return GF02( GF02(b) );</span><br><span class="line">	&#125;</span><br><span class="line">unsigned char GF08(unsigned char b)&#123;</span><br><span class="line">	return GF04( GF02(b) );</span><br><span class="line">	&#125;</span><br><span class="line">unsigned char GF09(unsigned char b)&#123;</span><br><span class="line">	return b ^ GF08(b);</span><br><span class="line">	&#125;</span><br><span class="line">unsigned char GF0B(unsigned char b)&#123;</span><br><span class="line">	return GF03(b) ^ GF08(b);</span><br><span class="line">	&#125;</span><br><span class="line">unsigned char GF0D(unsigned char b)&#123;</span><br><span class="line">	return GF04(b) ^ GF08(b) ^ GF01(b);</span><br><span class="line">	&#125;</span><br><span class="line">unsigned char GF0E(unsigned char b)&#123;</span><br><span class="line">	return GF04(b) ^ GF08(b) ^ GF02(b);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="将数据写入txt文件"><a href="#将数据写入txt文件" class="headerlink" title="将数据写入txt文件"></a>将数据写入txt文件</h2><p>由于输入数据时候，每次输入二维数组[4][4]的一个字节，比如0xab、0x0a，而当值小于等于0x0f时候，左4bit的0并不会被存入文件，将导致数据不全，不足32个十六进制数。而从文件读取数据的时候，使用fgets函数将一行数据取出放入数组，使用一个临时数组[32]来存放每1个十六进制数的值，最后在将左4bit与后4bit整合为一个byte放入[4][4]二维矩阵。 但若存入txt的时候，没有将0存放进去，读取文件内容的时候就会读取错误，无法判断缺少的0x00的位置。所以在写数据到txt文件的时候，添加一个判断条件，若值&lt;=0x0f，则向txt文件写入一个0。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">void write()&#123;</span><br><span class="line">	FILE *fp;//定义文件指针</span><br><span class="line">	fp=fopen(&quot;aes.txt&quot;,&quot;a&quot;);</span><br><span class="line">	if(fp==NULL)&#123; //判断指针是否为空，安全检查</span><br><span class="line">		printf(&quot;error&quot;);</span><br><span class="line">		return ;</span><br><span class="line">		&#125;</span><br><span class="line">	fprintf(fp,&quot;%s&quot;,a);	</span><br><span class="line">	for(i=0;i&lt;4;i++)&#123;</span><br><span class="line">		for(j=0;j&lt;4;j++)&#123;	</span><br><span class="line">			if(plaintext[i][j] &lt;= 0x0f)&#123;</span><br><span class="line">				fprintf(fp,&quot;0&quot;);&#125;</span><br><span class="line">			fprintf(fp,&quot;%x&quot;,plaintext[i][j]); </span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	fprintf(fp,&quot;%s&quot;,b);</span><br><span class="line">	for(i=0;i&lt;4;i++)&#123;</span><br><span class="line">		for(j=0;j&lt;4;j++)&#123;</span><br><span class="line">			if(resOfKey[i][j] &lt;= 0x0f)&#123;</span><br><span class="line">				fprintf(fp,&quot;0&quot;);			</span><br><span class="line">				&#125;</span><br><span class="line">			fprintf(fp,&quot;%x&quot;,resOfKey[i][j]); </span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	fclose(fp);//关闭文件</span><br><span class="line">//	fp=NULL;//置空指针，否则指向打开原文件的地址</span><br></pre></td></tr></table></figure></p>
+<h2 id="从txt文件读取数据"><a href="#从txt文件读取数据" class="headerlink" title="从txt文件读取数据"></a>从txt文件读取数据</h2><p>使用fgets函数将txt内容一行一行的读取打印，并将第一组密文与密钥存入数组，做AES解密测试。由于从txt读取的数值是ASCII码，所以还需要将ASCII码转换为十进制数字。读取密文的时候每次只能将一个字符存入数组，这一个字符仅代表4bit、一个十六进制数。转换成4*4矩阵，将存放了32个十六进制数的数组[32]中，若i%2==0，第i个数字左移4bit，再执行tmp[i]^tmp[i+1]，即将2个4bit存放到同一个1byte空间中。<br>C语言中，一个中文占2byte，txt文件中固定格式“密文：0x”,所以当取出当前行字符串时，s[0]-s[7]为格式内容，s[8]开始为密文数据，故定义n=8，从第8个数据开始存入密文数组。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">void read()&#123;</span><br><span class="line">		FILE *rfp;</span><br><span class="line">	rfp=fopen(&quot;aes.txt&quot;,&quot;r&quot;);</span><br><span class="line">	if(rfp==NULL)&#123;</span><br><span class="line">		printf(&quot;error\n&quot;);</span><br><span class="line">		return ;</span><br><span class="line">		&#125;</span><br><span class="line">	while (fgets(line, sizeof(line), rfp)) &#123; </span><br><span class="line">		//fgets逐行读取文件，到达文件尾终止while循环</span><br><span class="line">		sscanf(line, &quot;%s&quot;, str);</span><br><span class="line">		printf(&quot;%s\n&quot;, str); //打印，测试结果</span><br><span class="line">		if( i == 2)&#123;</span><br><span class="line">			n=8;</span><br><span class="line">			printf(&quot;密文0x：&quot;);</span><br><span class="line">			for( j=0; j&lt;4; j++)&#123;</span><br><span class="line">				for(k=0; k&lt;8; k++)&#123;</span><br><span class="line">					if( str[n] &gt;=48 &amp;&amp; str[n] &lt;=57 )&#123;</span><br><span class="line">						tmpcipher[j][k] = (unsigned char)str[n++]-48;</span><br><span class="line">					&#125;else	&#123;</span><br><span class="line">					tmpcipher[j][k] = (unsigned char)str[n++]-97+10;</span><br><span class="line">					&#125;</span><br><span class="line">					printf(&quot;%x&quot;,ciphertext[j][k] );</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				i++;</span><br><span class="line">				&#125;</span><br><span class="line">	for(i=0; i&lt;4; i++)&#123;</span><br><span class="line">		for(j=0; j&lt;4; j++)&#123;</span><br><span class="line">			right = tmpcipher[i][j*2] &lt;&lt; 4;</span><br><span class="line">			ciphertext[i][j] = right ^ tmpcipher[i][j*2+1];</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	fclose(rfp);rfp=NULL;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></p>
+
+    </div>
+</div>
+
+<div class="cube-article-nav">
+    <ul>
+        
+        
+        <li class="next">
+            <a href="/2018/08/20/C：基于WinPcap的网络抓包/">
+                C：基于WinPcap的网络抓包
+                <i class="cube-icon cube-next" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+<!-- TODO 根据theme.comment的内容进行入口选择 -->
+
+
+
+        </div>
+        <div class="cube-right">
+            
+
+<div class="cube-search cube-sidebar" id="cube-search">
+    <div class="search-container">
+        <input type="text" placeholder="Search" class="cube-search-input" id="cube-search-input">
+        <i class="cube-icon cube-icon-search cube-search-submit" aria-hidden="true"></i>
+    </div>
+    <!-- TODO 通过给window赋一个全局变量，通过脚本赋值 -->
+</div>
+<script>
+    (function (window) {
+        'use strict';
+        window.searchModule = {}
+        window.searchModule.JSONUrl = '/content.json'
+        window.searchModule.rootUrl = '/'
+    })(window)
+</script>
+<div class="cube-search-form">
+    <div class="cube-search-control">
+        <input type="text" placeholder="Search" class="search-input">
+        <a class="close-button">
+            <i class="cube-icon cube-close" aria-hidden="true"></i>
+        </a>
+    </div>
+    <div class="cube-search-result"></div>
+</div>
+
+
+<div class="cube-author cube-sidebar" id="cube-author">
+    
+    
+    <style>
+        @media(min-width: 768px) {
+            .cube-author img {
+                margin-top: 40px;
+                margin-bottom: 10px;
+            }
+        }
+        @media(max-width: 1120px) and (min-width: 768px) {
+            .cube-author img {
+                width: 128px;
+                height: 128px;
+            }
+        }
+        @media(min-width: 1120px) {
+            .cube-author img {
+                width: 160px;
+                height: 160px;
+            }
+        }
+    </style>
+    
+    <img src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1511105720318&amp;di=cfe23c1b52ca59da55fffe3c18a086de&amp;imgtype=0&amp;src=http%3A%2F%2Fimg5.duitang.com%2Fuploads%2Fitem%2F201609%2F14%2F20160914201653_4Brj8.png" alt="avatar" class="cube-avatar">
+    
+    
+    <span>Hizex</span>
+    
+    
+    <div class="count">
+        <a class="count articles"><span>3</span>Article</a>
+        <a class="count tags"><span>2</span>Tags</a>
+        <a class="count categories"><span>0</span>Categories</a>
+    </div>
+</div>
+
+
+
+<div class="cube-recent-posts cube-sidebar" id="cube-recent-posts">
+    <div class="title">
+        <a>Recent Posts</a>
+    </div>
+    <ul class="list">
+        
+        
+        <li>
+            <!-- TODO 如果文章要显示图片，那么在front-matter上添加preview属性(url or path) -->
+            
+            <div class="normal">
+                <p class="index first">
+                    <span>1</span>
+                </p>
+                <p class="title">
+                    <a href="/2018/11/04/C：AES加密解密算法/" title="C：AES加密解密算法">C：AES加密解密算法</a>
+                </p>
+            </div>
+            
+        </li>
+        
+        
+        
+        <li>
+            <div class="normal">
+                <p class="index">
+                    <span>2</span>
+                </p>
+                <p class="title">
+                    <a href="/2018/08/20/C：基于WinPcap的网络抓包/" title="C：基于WinPcap的网络抓包">C：基于WinPcap的网络抓包</a>
+                </p>
+            </div>
+        </li>
+        
+        
+        
+        <li>
+            <div class="normal">
+                <p class="index">
+                    <span>3</span>
+                </p>
+                <p class="title">
+                    <a href="/2018/08/16/hello-world/" title="Hello World">Hello World</a>
+                </p>
+            </div>
+        </li>
+        
+        
+    </ul>
+</div>
+
+
+
+
+
+<div class="cube-tagcloud cube-sidebar" id="cube-tagcloud">
+    <div class="title">
+        <a href="/tags">Tagcloud</a>
+    </div>
+    <div class="cube-boxs">
+        
+        
+        <div class="cube-box ">
+            <a href="/tags/C/">#C</a>
+        </div>
+        
+        
+        <div class="cube-box ">
+            <a href="/tags/密码学/">#密码学</a>
+        </div>
+        
+    </div>
+</div>
+
+
+
+<div class="cube-links cube-sidebar" id="cube-links">
+    <div class="title">
+        <a>Links</a>
+    </div>
+    <ul class="list">
+        
+        <li>
+            
+            
+            <img src="http://cube-1252774894.cosgz.myqcloud.com/links/GitHub.png">
+            
+            <a href="https://github.com/ZEROKISEKI" target="_blank">GitHub</a>
+        </li>
+        
+        <li>
+            
+            
+            <img src="http://cube-1252774894.cosgz.myqcloud.com/links/Coding.png">
+            
+            <a href="https://coding.net/u/SORA1" target="_blank">Coding</a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+    </div>
+</div>
+<footer class="cube-footer">
+    
+© 2017 Hizex
+
+<br>
+Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>.&nbsp;Theme by <a href="https://github.com/ZEROKISEKI" target="_blank">AONOSORA</a>
+</footer>
+<!-- inject:script -->
+<script src="/js/script.js"></script>
+<!-- endinject -->
+<div class="cube-loading out"></div>
+</body>
+</html>
